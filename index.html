@@ -284,23 +284,56 @@
             </div>
             <script>
             (function(){
-                var idx=0, timer;
-                var slides=document.querySelectorAll('#projSlider .proj-slide');
-                var total=slides.length;
-                function vis(){ return window.innerWidth<576?1:window.innerWidth<992?2:3; }
-                function move(){
-                    var v=vis();
-                    var wrap=document.querySelector('.proj-slider-wrap');
-                    var w=(wrap.offsetWidth-(v-1)*24)/v;
-                    document.getElementById('projSlider').style.transform='translateX(-'+idx*(w+24)+'px)';
+                var slider = document.getElementById('projSlider');
+                var origSlides = Array.from(slider.querySelectorAll('.proj-slide'));
+                var total = origSlides.length;
+                var timer;
+
+                // Clone all slides and append/prepend for infinite effect
+                origSlides.forEach(function(s){ slider.appendChild(s.cloneNode(true)); });
+                origSlides.slice().reverse().forEach(function(s){ slider.insertBefore(s.cloneNode(true), slider.firstChild); });
+
+                // All slides (including clones)
+                var allSlides = slider.querySelectorAll('.proj-slide');
+                var idx = total; // Start at the first real slide (after prepended clones)
+
+                function vis(){ return window.innerWidth < 576 ? 1 : window.innerWidth < 992 ? 2 : 3; }
+
+                function slideWidth(){
+                    var v = vis();
+                    var wrap = document.querySelector('.proj-slider-wrap');
+                    return (wrap.offsetWidth - (v - 1) * 24) / v;
                 }
-                window.projMove=function(d){
-                    var v=vis(); idx=(idx+d+total)%total; move();
-                    clearInterval(timer); timer=setInterval(function(){window.projMove(1);},3500);
+
+                function moveTo(i, animate){
+                    slider.style.transition = animate === false ? 'none' : 'transform 0.5s ease';
+                    slider.style.transform = 'translateX(-' + i * (slideWidth() + 24) + 'px)';
+                }
+
+                function jumpLoop(){
+                    // When we hit the cloned end, silently jump to real start
+                    if(idx >= total * 2){
+                        idx = total;
+                        moveTo(idx, false);
+                    }
+                    // When we hit the cloned start, silently jump to real end
+                    if(idx < total){
+                        idx = total * 2 - 1;
+                        moveTo(idx, false);
+                    }
+                }
+
+                window.projMove = function(d){
+                    idx += d;
+                    moveTo(idx, true);
+                    setTimeout(jumpLoop, 520);
+                    clearInterval(timer);
+                    timer = setInterval(function(){ window.projMove(1); }, 3500);
                 };
-                window.addEventListener('resize',move);
-                move();
-                timer=setInterval(function(){window.projMove(1);},3500);
+
+                window.addEventListener('resize', function(){ moveTo(idx, false); });
+                moveTo(idx, false);
+                timer = setInterval(function(){ window.projMove(1); }, 3500);
             })();
             </script>
         </div>
