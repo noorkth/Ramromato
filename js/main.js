@@ -80,31 +80,34 @@
     });
 
     
-    // Project carousel
-    $('.project-carousel').owlCarousel({
-        autoplay: true,
-        smartSpeed: 1000,
-        margin: 25,
-        loop: true,
-        center: false,
-        dots: false,
-        nav: true,
-        navText : [
-            '<i class="bi bi-chevron-left position-absolute top-50 start-0 translate-middle-y bg-primary text-white fs-4 p-2 z-3" style="cursor: pointer;"></i>',
-            '<i class="bi bi-chevron-right position-absolute top-50 end-0 translate-middle-y bg-primary text-white fs-4 p-2 z-3" style="cursor: pointer;"></i>'
-        ],
-        responsive: {
-            0:{
-                items:1
-            },
-            768:{
-                items:2
-            },
-            992:{
-                items:3
+    // Project carousel — delayed init so Owl can measure widths correctly
+    setTimeout(function () {
+        $('.project-carousel').owlCarousel({
+            autoplay: true,
+            autoplayTimeout: 3000,
+            smartSpeed: 1000,
+            margin: 25,
+            loop: true,
+            center: false,
+            dots: false,
+            nav: true,
+            navText : [
+                '<i class="bi bi-chevron-left"></i>',
+                '<i class="bi bi-chevron-right"></i>'
+            ],
+            responsive: {
+                0:{
+                    items:1
+                },
+                768:{
+                    items:2
+                },
+                992:{
+                    items:3
+                }
             }
-        }
-    });
+        });
+    }, 300);
 
 })(jQuery);
 
