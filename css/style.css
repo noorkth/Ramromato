@@ -29,6 +29,11 @@ h6,
     font-weight: 400 !important;
 }
 
+/*** Global Paragraph Justification ***/
+p {
+    text-align: justify;
+}
+
 .back-to-top {
     position: fixed;
     display: none;
