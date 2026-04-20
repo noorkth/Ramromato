@@ -5,4 +5,4 @@ Allow: /
 Disallow: /404
 
 # Sitemap location
-Sitemap: https://ramromato.com/sitemap.xml
+Sitemap: https://ramromato.com.np/sitemap.xml
