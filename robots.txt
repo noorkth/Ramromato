@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Block 404 page from indexing
+Disallow: /404
+
+# Sitemap location
+Sitemap: https://ramromato.com/sitemap.xml
