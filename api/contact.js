@@ -2,11 +2,11 @@ const nodemailer = require('nodemailer');
 
 /**
  * Vercel Serverless Function — POST /api/contact
- * Forwards contact form submissions to ramromatoptvltd@gmail.com
+ * Forwards contact form submissions to ramromatopvtltd@gmail.com
  * via Google SMTP (STARTTLS on port 587).
  *
  * Required environment variables:
- *   GMAIL_USER         — the Gmail address (ramromatoptvltd@gmail.com)
+ *   GMAIL_USER         — the Gmail address (ramromatopvtltd@gmail.com)
  *   GMAIL_APP_PASSWORD — 16-char App Password from Google Account security
  */
 module.exports = async function handler(req, res) {

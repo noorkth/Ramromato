@@ -1,16 +1,35 @@
-require('dotenv').config({ path: '.env' });
+const fs = require('fs');
+const path = require('path');
 const nodemailer = require('nodemailer');
 
 async function testEmail() {
-  const user = (process.env.GMAIL_USER || '').trim();
-  const pass = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s/g, '');
+  console.log('Starting local email test...');
 
-  console.log(`Starting local email test...`);
+  // Parse .env manually so we don't need the dotenv package
+  const envPath = path.join(__dirname, '../.env');
+  let user = '';
+  let pass = '';
+
+  try {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const lines = envContent.split('\n');
+    for (const line of lines) {
+      if (line.startsWith('GMAIL_USER=')) {
+        user = line.replace('GMAIL_USER=', '').trim();
+      } else if (line.startsWith('GMAIL_APP_PASSWORD=')) {
+        pass = line.replace('GMAIL_APP_PASSWORD=', '').trim().replace(/\s/g, '');
+      }
+    }
+  } catch (err) {
+    console.error('❌ Could not read .env file. Make sure it exists in the project root.');
+    return;
+  }
+
   console.log(`User: ${user}`);
-  console.log(`Password length: ${pass.length}`);
+  console.log(`Password length: ${pass ? pass.length : 0}`);
 
-  if (!user || !pass) {
-    console.error('Missing GMAIL_USER or GMAIL_APP_PASSWORD in .env file.');
+  if (!user || user.includes('xxx') || !pass || pass.includes('xxxx')) {
+    console.error('❌ Missing or placeholder values in .env. Please add real credentials.');
     return;
   }
 
@@ -27,7 +46,6 @@ async function testEmail() {
     await transporter.verify();
     console.log('✅ SMTP connection verified successfully!');
     
-    // Attempt to send a test email to itself
     const mailOptions = {
       from: user,
       to: user,
