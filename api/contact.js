@@ -27,17 +27,21 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ success: false, error: 'Invalid email address.' });
   }
 
-  // ── Nodemailer transporter ──────────────────────────────────────────────
-  // Strip spaces — Google displays App Passwords as "xxxx xxxx xxxx xxxx"
-  // but SMTP requires the raw 16-char string without spaces.
+  // ── Check env vars are present ─────────────────────────────────────────
+  const gmailUser = (process.env.GMAIL_USER || '').trim();
   const gmailPass = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s/g, '');
 
+  if (!gmailUser || !gmailPass) {
+    console.error('Missing env vars: GMAIL_USER or GMAIL_APP_PASSWORD not set.');
+    return res.status(500).json({ success: false, error: 'Server misconfiguration.', code: 'ENV_MISSING' });
+  }
+
+  // ── Nodemailer transporter (Gmail service preset) ───────────────────────
+  // Using service:'gmail' is more reliable than manual host/port for App Passwords.
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // STARTTLS
+    service: 'gmail',
     auth: {
-      user: process.env.GMAIL_USER,
+      user: gmailUser,
       pass: gmailPass,
     },
   });
@@ -46,7 +50,7 @@ module.exports = async function handler(req, res) {
   try {
     await transporter.verify();
   } catch (verifyErr) {
-    console.error('SMTP verify failed:', verifyErr.message, verifyErr.code);
+    console.error('SMTP verify failed:', verifyErr.message, '| code:', verifyErr.code, '| user:', gmailUser, '| passLen:', gmailPass.length);
     return res.status(500).json({
       success: false,
       error: 'SMTP configuration error.',
@@ -56,8 +60,8 @@ module.exports = async function handler(req, res) {
 
   // ── Email to Ramromato ──────────────────────────────────────────────────
   const mailOptions = {
-    from: `"Ramromato Contact Form" <${process.env.GMAIL_USER}>`,
-    to: process.env.GMAIL_USER,
+    from: `"Ramromato Contact Form" <${gmailUser}>`,
+    to: gmailUser,
     replyTo: `"${name}" <${email}>`,
     subject: `[Contact Form] ${subject}`,
     html: `
@@ -97,7 +101,7 @@ module.exports = async function handler(req, res) {
 
   // ── Auto-reply to the sender ────────────────────────────────────────────
   const autoReplyOptions = {
-    from: `"Ramromato Pvt. Ltd." <${process.env.GMAIL_USER}>`,
+    from: `"Ramromato Pvt. Ltd." <${gmailUser}>`,
     to: email,
     subject: `Thank you for reaching out — Ramromato Pvt. Ltd.`,
     html: `
