@@ -352,11 +352,30 @@
         <div class="container-fluid copyright">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">&copy; <a href="index.html">Ramromato
-                            Pvt. Ltd.</a>, All Right Reserved.</div>
-                    <div class="col-md-6 text-center text-md-end">Designed By <a
-                            href="https://noorkayastha.com.np">noorkth</a></div>
-                    Codex</a>
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <span id="currentYear"></span><a href="index.html"> Ramromato Pvt. Ltd.</a>, All Right Reserved.
+                    </div>
+                    <script>
+                        // Current year for footer
+                        document.getElementById("currentYear").textContent = new Date().getFullYear();
+
+                        // Remove no-js class if JavaScript is enabled
+                        document.documentElement.classList.remove('no-js');
+
+                        // Initialize Bootstrap carousel
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const testimonialCarousel = new bootstrap.Carousel(document.getElementById('testimonialCarousel'), {
+                                interval: 5000,
+                                wrap: true,
+                                keyboard: true,
+                                pause: 'hover',
+                                touch: true
+                            });
+                        });
+                    </script>
+                    <div class="col-md-6 text-center text-md-end">
+                        Designed By <a href="https://noorkayastha.com.np">noorkth</a>
+                    </div>
                 </div>
             </div>
         </div>
