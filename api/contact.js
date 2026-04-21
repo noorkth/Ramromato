@@ -28,15 +28,31 @@ module.exports = async function handler(req, res) {
   }
 
   // ── Nodemailer transporter ──────────────────────────────────────────────
+  // Strip spaces — Google displays App Passwords as "xxxx xxxx xxxx xxxx"
+  // but SMTP requires the raw 16-char string without spaces.
+  const gmailPass = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s/g, '');
+
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     secure: false, // STARTTLS
     auth: {
       user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASSWORD,
+      pass: gmailPass,
     },
   });
+
+  // Verify SMTP connection before attempting to send
+  try {
+    await transporter.verify();
+  } catch (verifyErr) {
+    console.error('SMTP verify failed:', verifyErr.message, verifyErr.code);
+    return res.status(500).json({
+      success: false,
+      error: 'SMTP configuration error.',
+      code: verifyErr.code || 'UNKNOWN',
+    });
+  }
 
   // ── Email to Ramromato ──────────────────────────────────────────────────
   const mailOptions = {
@@ -117,7 +133,11 @@ module.exports = async function handler(req, res) {
     await transporter.sendMail(autoReplyOptions);
     return res.status(200).json({ success: true, message: 'Message sent successfully.' });
   } catch (err) {
-    console.error('Email send error:', err);
-    return res.status(500).json({ success: false, error: 'Failed to send email. Please try again later.' });
+    console.error('Email send error:', err.message, err.code);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to send email. Please try again later.',
+      code: err.code || 'UNKNOWN',
+    });
   }
 };
