@@ -9,3 +9,10 @@
 
 # Logs
 *.log
+
+# Environment variables (NEVER commit — contains Gmail App Password)
+.env
+.env.local
+
+# Node
+node_modules/

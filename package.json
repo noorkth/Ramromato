@@ -1,0 +1,8 @@
+{
+  "name": "ramromato",
+  "version": "1.0.0",
+  "description": "Ramromato Pvt. Ltd. — Sustainable Earth Architecture",
+  "dependencies": {
+    "nodemailer": "^6.9.13"
+  }
+}
