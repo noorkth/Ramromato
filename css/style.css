@@ -370,6 +370,25 @@ p {
     color: #FFFFFF !important;
 }
 
+.proj-slide {
+    flex: 0 0 100%;
+    min-width: 100%;
+}
+
+@media (min-width: 576px) {
+    .proj-slide {
+        flex: 0 0 calc(50% - 12px);
+        min-width: calc(50% - 12px);
+    }
+}
+
+@media (min-width: 992px) {
+    .proj-slide {
+        flex: 0 0 calc(33.333333% - 16px);
+        min-width: calc(33.333333% - 16px);
+    }
+}
+
 
 /*** Team ***/
 .team-items {
